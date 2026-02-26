@@ -1,6 +1,6 @@
 name: matger_core_logic
 description: "A new Flutter project."
-version: 0.0.1
+version: 1.0.0
 homepage:
 
 environment:
@@ -19,6 +19,7 @@ dependencies:
   JoDija_reposatory:
     path: /Users/moaz/Desktop/delta/tools/JoDija_reposatory
   shared_preferences: ^2.5.4
+  get_it: ^9.2.1
 
 
 dev_dependencies:
