@@ -17,6 +17,7 @@ import 'package:matger_core_logic/features/commrec/repo/order_repo.dart';
 import 'package:matger_core_logic/features/commrec/source/order_source.dart';
 import 'package:matger_core_logic/features/commrec/repo/product_repo.dart';
 import 'package:matger_core_logic/features/commrec/source/product_source.dart';
+import 'package:matger_core_logic/repo_bloc/test_bloc.dart';
 
 final GetIt sl = GetIt.instance; // sl stands for Service Locator
 
@@ -56,4 +57,8 @@ Future<void> initCoreLocator() async {
   );
   sl.registerLazySingleton<OrderRepo>(() => OrderRepo(orderSource: sl()));
   sl.registerLazySingleton<ProductRepo>(() => ProductRepo(productSource: sl()));
+  // ==========================================
+  // 3. Blocs (Feature Management)
+  // ==========================================
+  sl.registerFactory(() => TestBloc(testRepo: sl()));
 }

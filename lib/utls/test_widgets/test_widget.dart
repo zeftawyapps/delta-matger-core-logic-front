@@ -21,6 +21,7 @@ import 'package:matger_core_logic/repo_bloc/product_bloc.dart';
 import 'package:matger_core_logic/repo_bloc/order_bloc.dart';
 import 'package:matger_core_logic/features/commrec/data/product_model.dart';
 import 'package:matger_core_logic/features/commrec/data/order_model.dart';
+import 'package:matger_core_logic/core/di/injection_container.dart';
 
 enum LogicModule {
   system,
@@ -74,7 +75,7 @@ class _LogicDashboardState extends State<LogicDashboard> {
   void initState() {
     super.initState();
     _addLog("🚀 Multi-Module Logic Hub Active.");
-    TestBloc().loadSettings();
+    sl<TestBloc>().loadSettings();
   }
 
   void _addLog(String message) {
@@ -264,7 +265,7 @@ class _LogicDashboardState extends State<LogicDashboard> {
             title: "Sync Config",
             desc: "Reload base system settings",
             icon: Icons.refresh,
-            onTap: () => TestBloc().loadSettings(),
+            onTap: () => sl<TestBloc>().loadSettings(),
           ),
         ]);
       case LogicModule.categories:
@@ -398,7 +399,7 @@ class _LogicDashboardState extends State<LogicDashboard> {
             children: [
               // 0: System
               DataSourceBlocBuilder<AppSettings>(
-                bloc: TestBloc().settingsBloc,
+                bloc: sl<TestBloc>().settingsBloc,
                 success: (data) => _buildResultList(data?.toJson()),
                 loading: () => _buildLoading(),
                 failure: _buildErrorView,
