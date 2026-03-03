@@ -1,3 +1,4 @@
+import 'package:JoDija_reposatory/constes/api_urls.dart';
 import 'package:matger_core_logic/models/entity_meta.dart';
 
 class UserDataDetailsModel {
@@ -44,7 +45,9 @@ class UserDataDetailsModel {
           ? DateTime.tryParse(json['dateOfBirth'].toString())
           : null,
       bio: json['bio'] as String?,
-      avatarUrl: json['avatarUrl'] as String?,
+      avatarUrl: json['avatarUrl'] != null
+          ? ApiUrls.IMAGE_BASE_URL + json['avatarUrl'].toString()
+          : null,
       additionalInfo: json['additionalInfo'] as Map<String, dynamic>? ?? {},
       meta: json['meta'] != null ? EntityMeta.fromJson(json['meta']) : null,
     );
@@ -69,6 +72,7 @@ class UserDataDetailsModel {
 }
 
 class UserModel {
+  final String? id;
   final String username;
   final String email;
   final String name;
@@ -77,10 +81,13 @@ class UserModel {
   final bool isActive;
   final String? organizationId;
   final List<String> roles;
+  final List<String>? permissions;
+  final String? token;
   final UserDataDetailsModel? otherData;
   final EntityMeta? meta;
 
   UserModel({
+    this.id,
     required this.username,
     required this.email,
     required this.name,
@@ -89,12 +96,15 @@ class UserModel {
     this.isActive = true,
     this.organizationId,
     this.roles = const ['user'],
+    this.permissions,
+    this.token,
     this.otherData,
     this.meta,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
+      id: json['id'] as String? ?? json['_id'] as String?,
       username: json['username'] as String? ?? '',
       email: json['email'] as String? ?? '',
       name: json['name'] as String? ?? '',
@@ -105,6 +115,10 @@ class UserModel {
       roles:
           (json['roles'] as List?)?.map((e) => e.toString()).toList() ??
           ['user'],
+      permissions: (json['permissions'] as List?)
+          ?.map((e) => e.toString())
+          .toList(),
+      token: json['token'] as String?,
       otherData: json['otherData'] != null
           ? UserDataDetailsModel.fromJson(
               json['otherData'] as Map<String, dynamic>,
@@ -116,6 +130,7 @@ class UserModel {
 
   Map<String, dynamic> toJson() {
     return {
+      if (id != null) 'id': id,
       'username': username,
       'email': email,
       'name': name,
@@ -124,6 +139,8 @@ class UserModel {
       'isActive': isActive,
       'organizationId': organizationId,
       'roles': roles,
+      if (permissions != null) 'permissions': permissions,
+      if (token != null) 'token': token,
       'otherData': otherData?.toJson(),
       'meta': meta?.toJson(),
     };

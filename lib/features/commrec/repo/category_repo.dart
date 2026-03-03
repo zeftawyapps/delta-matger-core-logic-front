@@ -46,10 +46,12 @@ class CategoryRepo {
     }
   }
 
-  Future<RemoteBaseModel<List<CategoryData>>> getCategoriesByShop(
-    String shopId,
+  Future<RemoteBaseModel<List<CategoryData>>> getCategoriesByOrganization(
+    String organizationId,
   ) async {
-    final result = await _categorySource.getCategoriesByShop(shopId);
+    final result = await _categorySource.getCategoriesByOrganization(
+      organizationId,
+    );
 
     if (result.error != null) {
       return RemoteBaseModel(

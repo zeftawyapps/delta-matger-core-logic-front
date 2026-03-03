@@ -4,7 +4,8 @@ class EndPoints {
   // Categories
   static const String categories = "/categories";
   static const String activeCategories = "/categories/active";
-  static String shopCategories(String shopId) => "/categories/shop/$shopId";
+  static String orgCategories(String organizationId) =>
+      "/categories/organization/$organizationId";
   static String categoryCount(String shopId) =>
       "/categories/shop/$shopId/count";
 

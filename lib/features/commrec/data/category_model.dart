@@ -1,3 +1,4 @@
+import 'package:JoDija_reposatory/constes/api_urls.dart';
 import 'package:matger_core_logic/models/entity_meta.dart';
 
 class CategoryData {
@@ -30,7 +31,9 @@ class CategoryData {
           ? EntityMeta.fromJson(json['meta'] as Map<String, dynamic>)
           : null,
       description: json['description'] as String?,
-      imageUrl: json['imageUrl'] as String?,
+      imageUrl: json['imageUrl'] != null
+          ? ApiUrls.IMAGE_BASE_URL + json['imageUrl']
+          : null,
       isActive: json['isActive'] as bool? ?? true,
       displayOrder: json['displayOrder'] as int?,
     );

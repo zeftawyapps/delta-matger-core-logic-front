@@ -34,18 +34,13 @@ class AuthBloc {
     );
 
     if (result.status == StatusModel.error || result.data == null) {
-      if (result.data != null) {
-        // Show the detailed error JSON in the inspector
-        loginBloc.successState(result.data);
-      } else {
-        loginBloc.failedState(
-          ErrorStateModel(message: result.message ?? "Login failed"),
-          () => login(username, password),
-        );
-      }
+      loginBloc.failedState(
+        ErrorStateModel(message: result.message ?? "Login failed"),
+        () => login(username, password),
+      );
     } else {
       // Save Token to HttpHeader for subsequent requests
-      final token = result.data?['token'];
+      final token = result.data?.token;
       if (token != null) {
         // Fix: Add a space after Bearer for correct header format
         HttpHeader().setAuthHeader(token, Bearer: "Bearer ");
@@ -59,7 +54,7 @@ class AuthBloc {
       final response = GeneralResponseModel(
         success: true,
         message: result.message ?? "Login successful",
-        data: result.data,
+        data: result.data?.toJson(),
       );
 
       loginBloc.successState(response.toJson());

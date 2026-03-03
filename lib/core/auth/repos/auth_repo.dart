@@ -10,7 +10,7 @@ class AuthRepo {
     _authSource = authSource ?? AuthSource();
   }
 
-  Future<RemoteBaseModel<Map<String, dynamic>>> login({
+  Future<RemoteBaseModel<UserModel>> login({
     required String username,
     required String password,
   }) async {
@@ -23,7 +23,7 @@ class AuthRepo {
       return RemoteBaseModel(
         status: StatusModel.error,
         message: result.error?.message,
-        data: result.error?.data as Map<String, dynamic>?,
+        data: null,
       );
     }
 
@@ -34,7 +34,10 @@ class AuthRepo {
           ? rawData['data'] as Map<String, dynamic>
           : rawData;
 
-      return RemoteBaseModel(data: data, status: StatusModel.success);
+      return RemoteBaseModel(
+        data: UserModel.fromJson(data),
+        status: StatusModel.success,
+      );
     } catch (e) {
       return RemoteBaseModel(
         status: StatusModel.error,

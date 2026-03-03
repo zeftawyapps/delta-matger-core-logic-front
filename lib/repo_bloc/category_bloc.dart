@@ -58,7 +58,7 @@ class CategoryBloc {
     categoriesListBloc.loadingState();
     rawDataBloc.loadingState();
 
-    final result = await _repo.getCategoriesByShop(shopId);
+    final result = await _repo.getCategoriesByOrganization(shopId);
 
     if (result.status == StatusModel.success && result.data != null) {
       categoriesListBloc.successState(result.data!);

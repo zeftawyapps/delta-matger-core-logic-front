@@ -75,11 +75,12 @@ class CategorySource {
     }
   }
 
-  Future<Result<RemoteBaseModel, dynamic>> getCategoriesByShop(
-    String shopId,
+  Future<Result<RemoteBaseModel, dynamic>> getCategoriesByOrganization(
+    String organizationId,
   ) async {
     try {
-      String url = "${ApiUrls.BASE_URL}${EndPoints.shopCategories(shopId)}";
+      String url =
+          "${ApiUrls.BASE_URL}${EndPoints.orgCategories(organizationId)}";
       final result = await HttpClient(userToken: false).sendRequest(
         method: HttpMethod.GET,
         url: url,
@@ -109,6 +110,7 @@ class CategorySource {
         final result = await HttpClient(userToken: true).uploadMapResult(
           url: url,
           fileKey: "image",
+          isUpdate: true,
           file: MultipartFile.fromBytes(
             imageBytes,
             filename: imageName ?? "image.png",

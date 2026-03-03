@@ -1,3 +1,4 @@
+import 'package:JoDija_reposatory/constes/api_urls.dart';
 import 'package:matger_core_logic/models/entity_meta.dart';
 
 class ProductData {
@@ -63,8 +64,12 @@ class ProductData {
       oldPrice: (json['oldPrice'] as num?)?.toDouble(),
       cost: (json['cost'] as num?)?.toDouble(),
       imageUrls:
-          (json['imageUrls'] as List?)?.map((e) => e.toString()).toList() ??
-          (json['images'] as List?)?.map((e) => e.toString()).toList() ??
+          (json['imageUrls'] as List?)
+              ?.map((e) => ApiUrls.IMAGE_BASE_URL + e.toString())
+              .toList() ??
+          (json['images'] as List?)
+              ?.map((e) => ApiUrls.IMAGE_BASE_URL + e.toString())
+              .toList() ??
           [],
       isActive: json['isActive'] as bool? ?? true,
       stockQuantity: (json['stockQuantity'] as num? ?? 0).toInt(),
