@@ -21,6 +21,8 @@ class OfferData {
   final bool isActive;
   final int sortOrder;
   final EntityMeta? meta;
+  final bool isMasterProduct;
+  final String sharingLevel;
 
   OfferData({
     required this.id,
@@ -38,6 +40,8 @@ class OfferData {
     this.isActive = true,
     this.sortOrder = 0,
     this.meta,
+    this.isMasterProduct = true,
+    this.sharingLevel = 'private',
   });
 
   factory OfferData.fromJson(Map<String, dynamic> json) {
@@ -67,6 +71,8 @@ class OfferData {
       isActive: TypeParser.parseBool(json['isActive'], true),
       sortOrder: TypeParser.parseInt(json['sortOrder']),
       meta: json['meta'] != null ? EntityMeta.fromJson(json['meta']) : null,
+      isMasterProduct: json['isMasterProduct'] is bool ? json['isMasterProduct'] as bool : (json['isMasterProduct']?.toString() != 'false'),
+      sharingLevel: json['sharingLevel'] as String? ?? 'private',
     );
   }
 
@@ -87,6 +93,8 @@ class OfferData {
       'isActive': isActive,
       'sortOrder': sortOrder,
       'meta': meta?.toJson(),
+      'isMasterProduct': isMasterProduct,
+      'sharingLevel': sharingLevel,
     };
   }
 
@@ -106,6 +114,8 @@ class OfferData {
     bool? isActive,
     int? sortOrder,
     EntityMeta? meta,
+    bool? isMasterProduct,
+    String? sharingLevel,
   }) {
     return OfferData(
       id: id ?? this.id,
@@ -123,11 +133,13 @@ class OfferData {
       isActive: isActive ?? this.isActive,
       sortOrder: sortOrder ?? this.sortOrder,
       meta: meta ?? this.meta,
+      isMasterProduct: isMasterProduct ?? this.isMasterProduct,
+      sharingLevel: sharingLevel ?? this.sharingLevel,
     );
   }
 
   @override
   String toString() {
-    return 'OfferData(id: $id, name: ${name.ar}, targetType: ${targetType.name}, isActive: $isActive)';
+    return 'OfferData(id: $id, name: ${name.ar}, targetType: ${targetType.name}, isActive: $isActive, isMasterProduct: $isMasterProduct, sharingLevel: $sharingLevel)';
   }
 }

@@ -119,6 +119,115 @@ class AuthSource {
     }
   }
 
+  Future<Result<RemoteBaseModel, dynamic>> signup({
+    required Map<String, dynamic> userData,
+  }) async {
+    try {
+      JDRepoConsole.info(
+        "Attempting signup",
+        context: LogContext(module: "AuthSource", method: "signup"),
+      );
+      String url = "${ApiUrls.BASE_URL}${EndPoints.signup}";
+      final result = await HttpClient(userToken: false).sendRequest(
+        method: HttpMethod.POST,
+        url: url,
+        body: userData,
+        cancelToken: CancelToken(),
+      );
+
+      if (result.data?.status == StatusModel.success) {
+        JDRepoConsole.success(
+          "Signup successful",
+          context: LogContext(module: "AuthSource", method: "signup"),
+        );
+        return Result.data(result.data?.data);
+      }
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("signup", e);
+    }
+  }
+
+  Future<Result<RemoteBaseModel, dynamic>> requestOtp({
+    required String phone,
+  }) async {
+    try {
+      JDRepoConsole.info(
+        "Attempting to request OTP for $phone",
+        context: LogContext(module: "AuthSource", method: "requestOtp"),
+      );
+      String url = "${ApiUrls.BASE_URL}${EndPoints.requestOtp}";
+      final result = await HttpClient(userToken: false).sendRequest(
+        method: HttpMethod.POST,
+        url: url,
+        body: {"phone": phone},
+        cancelToken: CancelToken(),
+      );
+
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("requestOtp", e);
+    }
+  }
+
+  Future<Result<RemoteBaseModel, dynamic>> verifyOtp({
+    required String phone,
+    required String code,
+  }) async {
+    try {
+      JDRepoConsole.info(
+        "Attempting to verify OTP for $phone",
+        context: LogContext(module: "AuthSource", method: "verifyOtp"),
+      );
+      String url = "${ApiUrls.BASE_URL}${EndPoints.verifyOtp}";
+      final result = await HttpClient(userToken: false).sendRequest(
+        method: HttpMethod.POST,
+        url: url,
+        body: {"phone": phone, "code": code},
+        cancelToken: CancelToken(),
+      );
+
+      if (result.data?.status == StatusModel.success) {
+        JDRepoConsole.success(
+          "OTP verified successfully",
+          context: LogContext(module: "AuthSource", method: "verifyOtp"),
+        );
+        return Result.data(result.data?.data);
+      }
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("verifyOtp", e);
+    }
+  }
+
+  Future<Result<RemoteBaseModel, dynamic>> resetPassword({
+    required String identifier,
+    required String newPassword,
+    String? otpCode,
+  }) async {
+    try {
+      JDRepoConsole.info(
+        "Attempting reset password for: $identifier",
+        context: LogContext(module: "AuthSource", method: "resetPassword"),
+      );
+      String url = "${ApiUrls.BASE_URL}${EndPoints.resetPassword}";
+      final result = await HttpClient(userToken: false).sendRequest(
+        method: HttpMethod.POST,
+        url: url,
+        body: {
+          "identifier": identifier,
+          "newPassword": newPassword,
+          if (otpCode != null) "otpCode": otpCode,
+        },
+        cancelToken: CancelToken(),
+      );
+
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("resetPassword", e);
+    }
+  }
+
   Future<Result<RemoteBaseModel, dynamic>> changePassword({
     required String identifier,
     required String newPassword,
@@ -130,7 +239,7 @@ class AuthSource {
       );
       String url = "${ApiUrls.BASE_URL}${EndPoints.changePassword}";
       final result = await HttpClient(userToken: true).sendRequest(
-        method: HttpMethod.POST,
+        method: HttpMethod.PUT,
         url: url,
         body: {"identifier": identifier, "newPassword": newPassword},
         cancelToken: CancelToken(),
@@ -139,6 +248,25 @@ class AuthSource {
       return _wrap(result);
     } catch (e) {
       return _catchError("changePassword", e);
+    }
+  }
+
+  Future<Result<RemoteBaseModel, dynamic>> logout() async {
+    try {
+      JDRepoConsole.info(
+        "Attempting logout",
+        context: LogContext(module: "AuthSource", method: "logout"),
+      );
+      String url = "${ApiUrls.BASE_URL}${EndPoints.logout}";
+      final result = await HttpClient(userToken: true).sendRequest(
+        method: HttpMethod.POST,
+        url: url,
+        cancelToken: CancelToken(),
+      );
+
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("logout", e);
     }
   }
 

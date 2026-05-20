@@ -6,6 +6,7 @@ class EndPoints {
   // Categories
   static const String categories = "/categories";
   static const String activeCategories = "/categories/active";
+  static const String publicCategoriesCatalog = "/categories/public/catalog";
   static String orgCategories(String organizationId) =>
       "/categories/organization/$organizationId";
   static String categoryById(String id) => "/categories/$id";
@@ -20,6 +21,11 @@ class EndPoints {
   static String productsByCategory(String categoryId) =>
       "/products/category/$categoryId";
   static String updateStock(String productId) => "/products/$productId/stock";
+  static const String publicCatalog = "/products/public/catalog";
+  static String productUnits(String organizationId) =>
+      "/product-units/organization/$organizationId";
+  static String orgProducts(String organizationId) =>
+      "/products/organization/$organizationId";
 
   // Bulk Product Operations
   static const String bulkProducts = "/products/bulk";
@@ -122,8 +128,13 @@ class EndPoints {
   static const String login = "/auth/login";
   static String orgLogin(String orgName) => "/auth/$orgName/login";
   static const String register = "/auth/register";
+  static const String signup = "/auth/signup";
   static const String profile = "/auth/profile";
-  static const String changePassword = "/auth/reset-password";
+  static const String resetPassword = "/auth/reset-password";
+  static const String changePassword = "/auth/change-password";
+  static const String requestOtp = "/auth/request-otp";
+  static const String verifyOtp = "/auth/verify-otp";
+  static const String logout = "/auth/logout";
 
   // Roles
   static const String roles = "/roles";
@@ -153,6 +164,7 @@ class EndPoints {
 
   // Offers
   static const String offers = "/offers";
+  static const String publicOffersCatalog = "/offers/public/catalog";
   static String offerById(String offerId) => "/offers/$offerId";
   static String orgOffers(String organizationId) =>
       "/offers/organization/$organizationId";

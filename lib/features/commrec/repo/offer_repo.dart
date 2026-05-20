@@ -25,6 +25,8 @@ class OfferRepo {
     int? sortOrder,
     Uint8List? imageBytes,
     String? imageName,
+    bool? isMasterProduct,
+    String? sharingLevel,
   }) async {
     JDRepoConsole.info(
       "Creating offer in repo",
@@ -43,6 +45,8 @@ class OfferRepo {
       sortOrder: sortOrder,
       imageBytes: imageBytes,
       imageName: imageName,
+      isMasterProduct: isMasterProduct,
+      sharingLevel: sharingLevel,
     );
 
     if (result.error != null) {
@@ -231,6 +235,8 @@ class OfferRepo {
     int? sortOrder,
     Uint8List? imageBytes,
     String? imageName,
+    bool? isMasterProduct,
+    String? sharingLevel,
   }) async {
     JDRepoConsole.info(
       "Updating offer in repo: $offerId",
@@ -249,6 +255,8 @@ class OfferRepo {
       sortOrder: sortOrder,
       imageBytes: imageBytes,
       imageName: imageName,
+      isMasterProduct: isMasterProduct,
+      sharingLevel: sharingLevel,
     );
 
     if (result.error != null) {
@@ -320,5 +328,73 @@ class OfferRepo {
       context: LogContext(module: "OfferRepo", method: "deleteOffer"),
     );
     return RemoteBaseModel(data: true, status: StatusModel.success);
+  }
+
+  Future<RemoteBaseModel<List<OfferData>>> getPublicOffersCatalog() async {
+    JDRepoConsole.info(
+      "Fetching public offers catalog in repo",
+      context: LogContext(
+        module: "OfferRepo",
+        method: "getPublicOffersCatalog",
+      ),
+    );
+    final result = await _offerSource.getPublicOffersCatalog();
+
+    if (result.error != null) {
+      JDRepoConsole.error(
+        "Source error in getPublicOffersCatalog: ${result.error?.message}",
+        context: LogContext(
+          module: "OfferRepo",
+          method: "getPublicOffersCatalog",
+        ),
+      );
+      return RemoteBaseModel(
+        status: StatusModel.error,
+        message: result.error?.message,
+      );
+    }
+
+    try {
+      final rawData = result.data;
+      final List offersList;
+
+      if (rawData is List) {
+        offersList = rawData;
+      } else if (rawData is Map) {
+        offersList = (rawData.containsKey('data') && rawData['data'] is List)
+            ? rawData['data'] as List
+            : (rawData.containsKey('offers') && rawData['offers'] is List)
+            ? rawData['offers'] as List
+            : [];
+      } else {
+        offersList = [];
+      }
+
+      final offers = offersList
+          .map((e) => OfferData.fromJson(e as Map<String, dynamic>))
+          .toList();
+      JDRepoConsole.success(
+        "Fetched ${offers.length} public offers successfully in repo",
+        context: LogContext(
+          module: "OfferRepo",
+          method: "getPublicOffersCatalog",
+        ),
+      );
+      return RemoteBaseModel(data: offers, status: StatusModel.success);
+    } catch (e) {
+      JDRepoConsole.error(
+        "Parsing error in getPublicOffersCatalog: $e",
+        context: LogContext(
+          module: "OfferRepo",
+          method: "getPublicOffersCatalog",
+          metadata: result.data,
+        ),
+      );
+      return RemoteBaseModel(
+        status: StatusModel.error,
+        message: result.error?.message ?? "خطأ في عرض كتالوج العروض العام",
+        data: null,
+      );
+    }
   }
 }

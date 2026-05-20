@@ -13,6 +13,8 @@ class CategoryData {
   final bool isActive;
   final int? displayOrder;
   final int? productCount;
+  final bool isMasterProduct;
+  final String sharingLevel;
 
   CategoryData({
     required this.id,
@@ -24,6 +26,8 @@ class CategoryData {
     this.isActive = true,
     this.displayOrder,
     this.productCount,
+    this.isMasterProduct = true,
+    this.sharingLevel = 'private',
   });
 
   // Alias for backward compatibility if needed
@@ -48,6 +52,8 @@ class CategoryData {
       isActive: TypeParser.parseBool(json['isActive'], true),
       displayOrder: TypeParser.parseInt(json['displayOrder']),
       productCount: TypeParser.parseInt(json['productCount']),
+      isMasterProduct: TypeParser.parseBool(json['isMasterProduct'], true),
+      sharingLevel: (json['sharingLevel'] ?? 'private').toString(),
     );
   }
 
@@ -62,6 +68,8 @@ class CategoryData {
       'isActive': isActive,
       'displayOrder': displayOrder,
       'productCount': productCount,
+      'isMasterProduct': isMasterProduct,
+      'sharingLevel': sharingLevel,
     };
   }
 
@@ -75,6 +83,8 @@ class CategoryData {
     bool? isActive,
     int? displayOrder,
     int? productCount,
+    bool? isMasterProduct,
+    String? sharingLevel,
   }) {
     return CategoryData(
       id: id ?? this.id,
@@ -86,11 +96,13 @@ class CategoryData {
       isActive: isActive ?? this.isActive,
       displayOrder: displayOrder ?? this.displayOrder,
       productCount: productCount ?? this.productCount,
+      isMasterProduct: isMasterProduct ?? this.isMasterProduct,
+      sharingLevel: sharingLevel ?? this.sharingLevel,
     );
   }
 
   @override
   String toString() {
-    return 'CategoryData(id: $id, name: ${name.ar}, organizationId: $organizationId, isActive: $isActive, productCount: $productCount)';
+    return 'CategoryData(id: $id, name: ${name.ar}, organizationId: $organizationId, isActive: $isActive, productCount: $productCount, isMasterProduct: $isMasterProduct, sharingLevel: $sharingLevel)';
   }
 }

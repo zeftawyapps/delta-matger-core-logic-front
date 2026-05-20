@@ -18,6 +18,8 @@ class CategorySource {
     String? description,
     Uint8List? imageBytes,
     String? imageName,
+    bool? isMasterProduct,
+    String? sharingLevel,
     bool trigger = true,
   }) async {
     try {
@@ -41,6 +43,8 @@ class CategorySource {
             "name": name,
             "organizationId": shopId,
             if (description != null) "description": description,
+            if (isMasterProduct != null) "isMasterProduct": isMasterProduct.toString(),
+            if (sharingLevel != null) "sharingLevel": sharingLevel,
           },
           cancelToken: CancelToken(),
         );
@@ -52,6 +56,8 @@ class CategorySource {
             "name": name,
             "organizationId": shopId,
             if (description != null) "description": description,
+            if (isMasterProduct != null) "isMasterProduct": isMasterProduct,
+            if (sharingLevel != null) "sharingLevel": sharingLevel,
           },
           cancelToken: CancelToken(),
         );
@@ -145,6 +151,8 @@ class CategorySource {
     bool? isActive,
     Uint8List? imageBytes,
     String? imageName,
+    bool? isMasterProduct,
+    String? sharingLevel,
     bool trigger = true,
   }) async {
     try {
@@ -168,6 +176,8 @@ class CategorySource {
           data: {
             if (name != null) "name": name,
             if (isActive != null) "isActive": isActive.toString(),
+            if (isMasterProduct != null) "isMasterProduct": isMasterProduct.toString(),
+            if (sharingLevel != null) "sharingLevel": sharingLevel,
           },
           cancelToken: CancelToken(),
         );
@@ -178,6 +188,8 @@ class CategorySource {
           body: {
             if (name != null) "name": name,
             if (isActive != null) "isActive": isActive.toString(),
+            if (isMasterProduct != null) "isMasterProduct": isMasterProduct,
+            if (sharingLevel != null) "sharingLevel": sharingLevel,
           },
           cancelToken: CancelToken(),
         );
@@ -229,6 +241,43 @@ class CategorySource {
       return _wrap(result);
     } catch (e) {
       return _catchError("deleteCategory", e);
+    }
+  }
+
+  Future<Result<RemoteBaseModel, dynamic>> getPublicCategoriesCatalog({
+    String? name,
+  }) async {
+    try {
+      JDRepoConsole.info(
+        "Fetching public categories catalog - name: $name",
+        context: LogContext(
+          module: "CategorySource",
+          method: "getPublicCategoriesCatalog",
+        ),
+      );
+      String url = "${ApiUrls.BASE_URL}${EndPoints.publicCategoriesCatalog}";
+      if (name != null && name.isNotEmpty) {
+        url += "?name=${Uri.encodeComponent(name)}";
+      }
+      final result = await HttpClient(userToken: false).sendRequest(
+        method: HttpMethod.GET,
+        url: url,
+        cancelToken: CancelToken(),
+      );
+
+      if (result.data?.status == StatusModel.success) {
+        JDRepoConsole.success(
+          "Public categories catalog fetched successfully",
+          context: LogContext(
+            module: "CategorySource",
+            method: "getPublicCategoriesCatalog",
+          ),
+        );
+        return Result.data(result.data?.data);
+      }
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("getPublicCategoriesCatalog", e);
     }
   }
 

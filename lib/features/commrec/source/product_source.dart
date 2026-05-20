@@ -507,6 +507,143 @@ class ProductSource {
     }
   }
 
+  Future<Result<RemoteBaseModel, dynamic>> getPublicCatalog({
+    String? categoryId,
+    String? name,
+  }) async {
+    try {
+      JDRepoConsole.info(
+        "Fetching public catalog - categoryId: $categoryId, name: $name",
+        context: LogContext(module: "ProductSource", method: "getPublicCatalog"),
+      );
+      String url = "${ApiUrls.BASE_URL}${EndPoints.publicCatalog}";
+
+      List<String> queryParams = [];
+      if (categoryId != null && categoryId.isNotEmpty) {
+        queryParams.add("categoryId=$categoryId");
+      }
+      if (name != null && name.isNotEmpty) {
+        queryParams.add("name=${Uri.encodeComponent(name)}");
+      }
+      if (queryParams.isNotEmpty) {
+        url += "?${queryParams.join('&')}";
+      }
+
+      final result = await HttpClient(userToken: false).sendRequest(
+        method: HttpMethod.GET,
+        url: url,
+        cancelToken: CancelToken(),
+      );
+
+      if (result.data?.status == StatusModel.success) {
+        JDRepoConsole.success(
+          "Public catalog fetched successfully",
+          context: LogContext(module: "ProductSource", method: "getPublicCatalog"),
+        );
+        return Result.data(result.data?.data);
+      }
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("getPublicCatalog", e);
+    }
+  }
+
+  Future<Result<RemoteBaseModel, dynamic>> getProductUnits({
+    required String organizationId,
+  }) async {
+    try {
+      JDRepoConsole.info(
+        "Fetching product units for organization: $organizationId",
+        context: LogContext(module: "ProductSource", method: "getProductUnits"),
+      );
+      String url = "${ApiUrls.BASE_URL}${EndPoints.productUnits(organizationId)}";
+      final result = await HttpClient(userToken: false).sendRequest(
+        method: HttpMethod.GET,
+        url: url,
+        cancelToken: CancelToken(),
+      );
+
+      if (result.data?.status == StatusModel.success) {
+        JDRepoConsole.success(
+          "Product units fetched successfully",
+          context: LogContext(module: "ProductSource", method: "getProductUnits"),
+        );
+        return Result.data(result.data?.data);
+      }
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("getProductUnits", e);
+    }
+  }
+
+  Future<Result<RemoteBaseModel, dynamic>> getProductsByOrganization({
+    required String organizationId,
+    int page = 1,
+    int limit = 10,
+    String? categoryId,
+  }) async {
+    try {
+      JDRepoConsole.info(
+        "Fetching products for organization: $organizationId - page: $page, limit: $limit",
+        context: LogContext(
+          module: "ProductSource",
+          method: "getProductsByOrganization",
+        ),
+      );
+      String url =
+          "${ApiUrls.BASE_URL}${EndPoints.orgProducts(organizationId)}?page=$page&limit=$limit";
+      if (categoryId != null) {
+        url += "&categoryId=$categoryId";
+      }
+
+      final result = await HttpClient(userToken: false).sendRequest(
+        method: HttpMethod.GET,
+        url: url,
+        cancelToken: CancelToken(),
+      );
+
+      if (result.data?.status == StatusModel.success) {
+        JDRepoConsole.success(
+          "Products for organization fetched successfully",
+          context: LogContext(
+            module: "ProductSource",
+            method: "getProductsByOrganization",
+          ),
+        );
+        return Result.data(result.data?.data);
+      }
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("getProductsByOrganization", e);
+    }
+  }
+
+  Future<Result<RemoteBaseModel, dynamic>> getProductById(String productId) async {
+    try {
+      JDRepoConsole.info(
+        "Fetching single product by ID: $productId",
+        context: LogContext(module: "ProductSource", method: "getProductById"),
+      );
+      String url = "${ApiUrls.BASE_URL}${EndPoints.productById(productId)}";
+      final result = await HttpClient(userToken: false).sendRequest(
+        method: HttpMethod.GET,
+        url: url,
+        cancelToken: CancelToken(),
+      );
+
+      if (result.data?.status == StatusModel.success) {
+        JDRepoConsole.success(
+          "Product fetched successfully from source",
+          context: LogContext(module: "ProductSource", method: "getProductById"),
+        );
+        return Result.data(result.data?.data);
+      }
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("getProductById", e);
+    }
+  }
+
   Result<RemoteBaseModel, dynamic> _wrap(
     Result<RemoteBaseModel, RemoteBaseModel> result,
   ) {

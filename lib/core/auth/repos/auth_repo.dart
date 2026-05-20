@@ -266,4 +266,177 @@ class AuthRepo {
       );
     }
   }
+
+  Future<RemoteBaseModel<UserModel>> signup({
+    required Map<String, dynamic> userData,
+  }) async {
+    JDRepoConsole.info(
+      "Signup in repo",
+      context: LogContext(module: "AuthRepo", method: "signup"),
+    );
+    final result = await _authSource.signup(userData: userData);
+
+    if (result.error != null) {
+      JDRepoConsole.error(
+        "Source error in signup: ${result.error?.message}",
+        context: LogContext(module: "AuthRepo", method: "signup"),
+      );
+      return RemoteBaseModel(
+        status: StatusModel.error,
+        message: result.error?.message,
+      );
+    }
+
+    try {
+      final rawData = result.data as Map<String, dynamic>;
+      final data = (rawData.containsKey('data') && rawData['data'] is Map)
+          ? rawData['data'] as Map<String, dynamic>
+          : rawData;
+      final user = UserModel.fromJson(data);
+      JDRepoConsole.success(
+        "User signed up and parsed successfully",
+        context: LogContext(module: "AuthRepo", method: "signup"),
+      );
+      return RemoteBaseModel(data: user, status: StatusModel.success);
+    } catch (e) {
+      JDRepoConsole.error(
+        "Parsing error in signup: $e",
+        context: LogContext(
+          module: "AuthRepo",
+          method: "signup",
+          metadata: result.data,
+        ),
+      );
+      return RemoteBaseModel(
+        status: StatusModel.error,
+        message: result.error?.message ?? "خطأ في إنشاء الحساب",
+        data: null,
+      );
+    }
+  }
+
+  Future<RemoteBaseModel<bool>> requestOtp({
+    required String phone,
+  }) async {
+    JDRepoConsole.info(
+      "Requesting OTP in repo for: $phone",
+      context: LogContext(module: "AuthRepo", method: "requestOtp"),
+    );
+    final result = await _authSource.requestOtp(phone: phone);
+
+    if (result.error != null) {
+      JDRepoConsole.error(
+        "Source error in requestOtp: ${result.error?.message}",
+        context: LogContext(module: "AuthRepo", method: "requestOtp"),
+      );
+      return RemoteBaseModel(
+        status: StatusModel.error,
+        message: result.error?.message,
+        data: false,
+      );
+    }
+
+    return RemoteBaseModel(data: true, status: StatusModel.success);
+  }
+
+  Future<RemoteBaseModel<UserModel>> verifyOtp({
+    required String phone,
+    required String code,
+  }) async {
+    JDRepoConsole.info(
+      "Verifying OTP in repo for: $phone",
+      context: LogContext(module: "AuthRepo", method: "verifyOtp"),
+    );
+    final result = await _authSource.verifyOtp(phone: phone, code: code);
+
+    if (result.error != null) {
+      JDRepoConsole.error(
+        "Source error in verifyOtp: ${result.error?.message}",
+        context: LogContext(module: "AuthRepo", method: "verifyOtp"),
+      );
+      return RemoteBaseModel(
+        status: StatusModel.error,
+        message: result.error?.message,
+      );
+    }
+
+    try {
+      final rawData = result.data as Map<String, dynamic>;
+      final data = (rawData.containsKey('data') && rawData['data'] is Map)
+          ? rawData['data'] as Map<String, dynamic>
+          : rawData;
+      final user = UserModel.fromJson(data);
+      JDRepoConsole.success(
+        "OTP verified and user data parsed successfully in repo",
+        context: LogContext(module: "AuthRepo", method: "verifyOtp"),
+      );
+      return RemoteBaseModel(data: user, status: StatusModel.success);
+    } catch (e) {
+      JDRepoConsole.error(
+        "Parsing error in verifyOtp: $e",
+        context: LogContext(
+          module: "AuthRepo",
+          method: "verifyOtp",
+          metadata: result.data,
+        ),
+      );
+      return RemoteBaseModel(
+        status: StatusModel.error,
+        message: result.error?.message ?? "خطأ في معالجة البيانات بعد التحقق",
+        data: null,
+      );
+    }
+  }
+
+  Future<RemoteBaseModel<bool>> resetPassword({
+    required String identifier,
+    required String newPassword,
+    String? otpCode,
+  }) async {
+    JDRepoConsole.info(
+      "Resetting password in repo for: $identifier",
+      context: LogContext(module: "AuthRepo", method: "resetPassword"),
+    );
+    final result = await _authSource.resetPassword(
+      identifier: identifier,
+      newPassword: newPassword,
+      otpCode: otpCode,
+    );
+
+    if (result.error != null) {
+      JDRepoConsole.error(
+        "Source error in resetPassword: ${result.error?.message}",
+        context: LogContext(module: "AuthRepo", method: "resetPassword"),
+      );
+      return RemoteBaseModel(
+        status: StatusModel.error,
+        message: result.error?.message,
+        data: false,
+      );
+    }
+
+    return RemoteBaseModel(data: true, status: StatusModel.success);
+  }
+
+  Future<RemoteBaseModel<bool>> logout() async {
+    JDRepoConsole.info(
+      "Logging out in repo",
+      context: LogContext(module: "AuthRepo", method: "logout"),
+    );
+    final result = await _authSource.logout();
+
+    if (result.error != null) {
+      JDRepoConsole.error(
+        "Source error in logout: ${result.error?.message}",
+        context: LogContext(module: "AuthRepo", method: "logout"),
+      );
+      return RemoteBaseModel(
+        status: StatusModel.error,
+        message: result.error?.message,
+        data: false,
+      );
+    }
+
+    return RemoteBaseModel(data: true, status: StatusModel.success);
+  }
 }

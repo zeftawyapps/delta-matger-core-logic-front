@@ -18,6 +18,8 @@ class CategoryRepo {
     String? description,
     Uint8List? imageBytes,
     String? imageName,
+    bool? isMasterProduct,
+    String? sharingLevel,
   }) async {
     JDRepoConsole.info(
       "Creating category in repo: $name",
@@ -29,6 +31,8 @@ class CategoryRepo {
       description: description,
       imageBytes: imageBytes,
       imageName: imageName,
+      isMasterProduct: isMasterProduct,
+      sharingLevel: sharingLevel,
     );
 
     if (result.error != null) {
@@ -150,6 +154,8 @@ class CategoryRepo {
     bool? isActive,
     Uint8List? imageBytes,
     String? imageName,
+    bool? isMasterProduct,
+    String? sharingLevel,
   }) async {
     JDRepoConsole.info(
       "Updating category in repo: $categoryId",
@@ -161,6 +167,8 @@ class CategoryRepo {
       isActive: isActive,
       imageBytes: imageBytes,
       imageName: imageName,
+      isMasterProduct: isMasterProduct,
+      sharingLevel: sharingLevel,
     );
 
     if (result.error != null) {
@@ -226,5 +234,75 @@ class CategoryRepo {
       context: LogContext(module: "CategoryRepo", method: "deleteCategory"),
     );
     return RemoteBaseModel(data: true, status: StatusModel.success);
+  }
+
+  Future<RemoteBaseModel<List<CategoryData>>> getPublicCategoriesCatalog({
+    String? name,
+  }) async {
+    JDRepoConsole.info(
+      "Fetching public categories catalog in repo with name: $name",
+      context: LogContext(
+        module: "CategoryRepo",
+        method: "getPublicCategoriesCatalog",
+      ),
+    );
+    final result = await _categorySource.getPublicCategoriesCatalog(name: name);
+
+    if (result.error != null) {
+      JDRepoConsole.error(
+        "Source error in getPublicCategoriesCatalog: ${result.error?.message}",
+        context: LogContext(
+          module: "CategoryRepo",
+          method: "getPublicCategoriesCatalog",
+        ),
+      );
+      return RemoteBaseModel(
+        status: StatusModel.error,
+        message: result.error?.message,
+      );
+    }
+
+    try {
+      final rawData = result.data;
+      final List categoriesList;
+
+      if (rawData is List) {
+        categoriesList = rawData;
+      } else if (rawData is Map) {
+        categoriesList = (rawData.containsKey('data') && rawData['data'] is List)
+            ? rawData['data'] as List
+            : (rawData.containsKey('categories') && rawData['categories'] is List)
+            ? rawData['categories'] as List
+            : [];
+      } else {
+        categoriesList = [];
+      }
+
+      final categories = categoriesList
+          .map((e) => CategoryData.fromJson(e as Map<String, dynamic>))
+          .toList();
+      JDRepoConsole.success(
+        "Fetched ${categories.length} public categories successfully",
+        context: LogContext(
+          module: "CategoryRepo",
+          method: "getPublicCategoriesCatalog",
+        ),
+      );
+      return RemoteBaseModel(data: categories, status: StatusModel.success);
+    } catch (e) {
+      JDRepoConsole.error(
+        "Parsing error in getPublicCategoriesCatalog: $e",
+        context: LogContext(
+          module: "CategoryRepo",
+          method: "getPublicCategoriesCatalog",
+          metadata: result.data,
+        ),
+      );
+      return RemoteBaseModel(
+        status: StatusModel.error,
+        message: result.error?.message ?? "خطأ في عرض كتالوج الأقسام العام",
+        data: null,
+      );
+    }
   }
 }

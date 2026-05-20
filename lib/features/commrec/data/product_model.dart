@@ -91,6 +91,8 @@ class ProductData {
   final Map<String, dynamic> additionalData;
   final EntityMeta? meta;
   final DateTime? createdAt;
+  final bool isMasterProduct;
+  final String sharingLevel;
 
   ProductData({
     required this.id,
@@ -115,6 +117,8 @@ class ProductData {
     this.additionalData = const {},
     this.meta,
     this.createdAt,
+    this.isMasterProduct = true,
+    this.sharingLevel = 'private',
   });
 
   // Alias for backward compatibility
@@ -149,6 +153,8 @@ class ProductData {
       'meta',
       'createdAt',
       'updatedAt',
+      'isMasterProduct',
+      'sharingLevel',
     ];
 
     final additional = Map<String, dynamic>.from(json)
@@ -203,6 +209,8 @@ class ProductData {
       createdAt: json['createdAt'] != null
           ? DateTime.tryParse(json['createdAt'].toString())
           : null,
+      isMasterProduct: TypeParser.parseBool(json['isMasterProduct'], true),
+      sharingLevel: (json['sharingLevel'] ?? 'private').toString(),
     );
   }
 
@@ -231,6 +239,8 @@ class ProductData {
       'additionalData': additionalData,
       'meta': meta?.toJson(),
       'createdAt': createdAt?.toIso8601String(),
+      'isMasterProduct': isMasterProduct,
+      'sharingLevel': sharingLevel,
     };
   }
 

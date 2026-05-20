@@ -26,6 +26,8 @@ class OfferSource {
     int? sortOrder,
     Uint8List? imageBytes,
     String? imageName,
+    bool? isMasterProduct,
+    String? sharingLevel,
   }) async {
     try {
       JDRepoConsole.info(
@@ -48,6 +50,8 @@ class OfferSource {
       if (startDate != null) data["startDate"] = startDate.toIso8601String();
       if (endDate != null) data["endDate"] = endDate.toIso8601String();
       if (sortOrder != null) data["sortOrder"] = sortOrder.toString();
+      if (isMasterProduct != null) data["isMasterProduct"] = isMasterProduct.toString();
+      if (sharingLevel != null) data["sharingLevel"] = sharingLevel;
 
       Result<RemoteBaseModel<dynamic>, RemoteBaseModel<dynamic>> result;
       if (imageBytes != null) {
@@ -172,6 +176,8 @@ class OfferSource {
     int? sortOrder,
     Uint8List? imageBytes,
     String? imageName,
+    bool? isMasterProduct,
+    String? sharingLevel,
   }) async {
     try {
       JDRepoConsole.info(
@@ -191,6 +197,8 @@ class OfferSource {
       if (startDate != null) data["startDate"] = startDate.toIso8601String();
       if (endDate != null) data["endDate"] = endDate.toIso8601String();
       if (sortOrder != null) data["sortOrder"] = sortOrder.toString();
+      if (isMasterProduct != null) data["isMasterProduct"] = isMasterProduct.toString();
+      if (sharingLevel != null) data["sharingLevel"] = sharingLevel;
 
       Result<RemoteBaseModel<dynamic>, RemoteBaseModel<dynamic>> result;
       if (imageBytes != null) {
@@ -251,6 +259,38 @@ class OfferSource {
       return _wrap(result);
     } catch (e) {
       return _catchError("deleteOffer", e);
+    }
+  }
+
+  Future<Result<RemoteBaseModel, dynamic>> getPublicOffersCatalog() async {
+    try {
+      JDRepoConsole.info(
+        "Fetching public offers catalog",
+        context: LogContext(
+          module: "OfferSource",
+          method: "getPublicOffersCatalog",
+        ),
+      );
+      String url = "${ApiUrls.BASE_URL}${EndPoints.publicOffersCatalog}";
+      final result = await HttpClient(userToken: false).sendRequest(
+        method: HttpMethod.GET,
+        url: url,
+        cancelToken: CancelToken(),
+      );
+
+      if (result.data?.status == StatusModel.success) {
+        JDRepoConsole.success(
+          "Public offers catalog fetched successfully",
+          context: LogContext(
+            module: "OfferSource",
+            method: "getPublicOffersCatalog",
+          ),
+        );
+        return Result.data(result.data?.data);
+      }
+      return _wrap(result);
+    } catch (e) {
+      return _catchError("getPublicOffersCatalog", e);
     }
   }
 
